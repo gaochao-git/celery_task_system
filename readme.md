@@ -9,12 +9,13 @@ celery_task_system/
 │   ├── models.py      # 数据库模型
 │   ├── scheduler.py   # 自定义调度器
 │   └── tasks.py       # 任务定义
+├── scripts/
+│   ├── init_db.py             # 数据库初始化脚本
+│   ├── task_manager.py        # 任务管理工具
+│   ├── periodic_task_manager.py # 定时任务管理工具
+│   └── test_task.py           # 测试任务提交脚本
 ├── schema.sql         # 数据库表结构
-├── init_db.py         # 数据库初始化脚本
 ├── run_worker.py      # Worker 启动脚本
-├── task_manager.py    # 任务管理工具
-├── periodic_task_manager.py # 定时任务管理工具
-├── test_task.py       # 测试任务提交脚本
 └── requirements.txt   # 项目依赖
 
 ## 启动步骤
