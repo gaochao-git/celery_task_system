@@ -29,6 +29,7 @@ def task_prerun_handler(task_id=None, task=None, args=None, kwargs=None, **kw):
             existing_task.task_status = 'STARTED'
             existing_task.task_start_time = datetime.now()
             existing_task.task_retry_count += 1
+            existing_task.update_by = 'system'  # 添加更新人
         else:
             # 创建新任务记录
             new_task = Task(
@@ -38,7 +39,9 @@ def task_prerun_handler(task_id=None, task=None, args=None, kwargs=None, **kw):
                 create_time=datetime.now(),
                 task_start_time=datetime.now(),
                 task_args=json.dumps(args) if args else None,
-                task_kwargs=json.dumps(kwargs) if kwargs else None
+                task_kwargs=json.dumps(kwargs) if kwargs else None,
+                create_by='system',  # 添加创建人
+                update_by='system'   # 添加更新人
             )
             session.add(new_task)
         
@@ -62,6 +65,7 @@ def task_postrun_handler(task_id=None, task=None, state=None, retval=None, **kw)
             task_record.task_status = state
             task_record.task_complete_time = datetime.now()
             task_record.task_result = json.dumps(retval) if retval is not None else None
+            task_record.update_by = 'system'  # 添加更新人
             session.commit()
     except Exception as e:
         logger.error(f"任务后处理错误: {str(e)}")
@@ -134,7 +138,9 @@ def periodic_task():
             task_schedule_time=execution_time,
             task_execute_time=execution_time,
             task_status='SUCCESS',
-            task_result=json.dumps(result)
+            task_result=json.dumps(result),
+            create_by='system',  # 添加创建人
+            update_by='system'   # 添加更新人
         )
         session.add(task_run)
         session.commit()

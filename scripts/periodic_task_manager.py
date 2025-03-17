@@ -69,7 +69,9 @@ def add_task(args):
             task_name=args.name,
             task_path=args.task,
             task_enabled=True,
-            task_description=args.description
+            task_description=args.description,
+            create_by=args.user or 'admin',  # 添加创建人
+            update_by=args.user or 'admin'   # 添加更新人
         )
         
         # 设置间隔或Crontab
@@ -119,6 +121,9 @@ def update_task(args):
         
         if args.enabled is not None:
             task.task_enabled = args.enabled.lower() == 'true'
+        
+        # 更新更新人
+        task.update_by = args.user or 'admin'
         
         # 更新间隔或Crontab
         if args.interval:
@@ -213,6 +218,7 @@ def main():
     add_parser.add_argument('--args', help='参数列表 (逗号分隔)')
     add_parser.add_argument('--kwargs', help='关键字参数 (格式: key1=value1,key2=value2)')
     add_parser.add_argument('--description', help='任务描述')
+    add_parser.add_argument('--user', help='操作用户')
     
     # 更新任务
     update_parser = subparsers.add_parser('update', help='更新定时任务')
@@ -229,6 +235,7 @@ def main():
     update_parser.add_argument('--kwargs', help='关键字参数 (格式: key1=value1,key2=value2)')
     update_parser.add_argument('--enabled', help='是否启用 (true/false)')
     update_parser.add_argument('--description', help='任务描述')
+    update_parser.add_argument('--user', help='操作用户')
     
     # 删除任务
     delete_parser = subparsers.add_parser('delete', help='删除定时任务')

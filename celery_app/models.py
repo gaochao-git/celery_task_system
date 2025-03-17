@@ -24,6 +24,8 @@ class Task(Base):
     task_status = Column(String(50), default='PENDING')
     create_time = Column(DateTime, default=datetime.now)
     update_time = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    create_by = Column(String(100), nullable=True)
+    update_by = Column(String(100), nullable=True)
     task_start_time = Column(DateTime, nullable=True)
     task_complete_time = Column(DateTime, nullable=True)
     task_result = Column(Text, nullable=True)
@@ -45,6 +47,8 @@ class PeriodicTaskRun(Base):
     task_execute_time = Column(DateTime, default=datetime.now)
     create_time = Column(DateTime, default=datetime.now)
     update_time = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    create_by = Column(String(100), nullable=True)
+    update_by = Column(String(100), nullable=True)
     task_status = Column(String(50), default='SUCCESS')
     task_result = Column(Text, nullable=True)
     
@@ -71,6 +75,8 @@ class PeriodicTask(Base):
     task_run_count = Column(Integer, default=0)
     create_time = Column(DateTime, default=datetime.now)
     update_time = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    create_by = Column(String(100), nullable=True)
+    update_by = Column(String(100), nullable=True)
     task_description = Column(Text, nullable=True)
     
     def __repr__(self):

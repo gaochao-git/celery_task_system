@@ -33,6 +33,8 @@ celery_task_system/
 - `task_status`: 任务状态 (PENDING, STARTED, SUCCESS, FAILURE, REVOKED)
 - `create_time`: 创建时间
 - `update_time`: 更新时间
+- `create_by`: 创建人
+- `update_by`: 更新人
 - `task_start_time`: 开始执行时间
 - `task_complete_time`: 完成时间
 - `task_result`: 任务结果 (JSON格式)
@@ -58,6 +60,8 @@ celery_task_system/
 - `task_run_count`: 总运行次数
 - `create_time`: 创建时间
 - `update_time`: 更新时间
+- `create_by`: 创建人
+- `update_by`: 更新人
 - `task_description`: 任务描述
 
 ### celery_periodic_task_execution_logs 表 - 定时任务执行记录表
@@ -67,5 +71,7 @@ celery_task_system/
 - `task_execute_time`: 实际执行时间
 - `create_time`: 创建时间
 - `update_time`: 更新时间
+- `create_by`: 创建人
+- `update_by`: 更新人
 - `task_status`: 执行状态
 - `task_result`: 执行结果 (JSON格式)
