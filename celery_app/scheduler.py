@@ -20,32 +20,32 @@ class DatabaseScheduler(Scheduler):
         """从数据库更新定时任务"""
         session = get_session()
         try:
-            db_tasks = session.query(PeriodicTask).filter_by(enabled=True).all()
+            db_tasks = session.query(PeriodicTask).filter_by(task_enabled=True).all()
             
             self._schedule = {}
             
             for task in db_tasks:
                 # 解析参数
-                args = json.loads(task.args) if task.args else []
-                kwargs = json.loads(task.kwargs) if task.kwargs else {}
+                args = json.loads(task.task_args) if task.task_args else []
+                kwargs = json.loads(task.task_kwargs) if task.task_kwargs else {}
                 
                 # 创建调度
-                if task.interval is not None:
+                if task.task_interval is not None:
                     # 间隔调度
-                    schedule_obj = schedule(timedelta(seconds=task.interval))
+                    schedule_obj = schedule(timedelta(seconds=task.task_interval))
                 else:
                     # Crontab 调度
                     schedule_obj = crontab(
-                        minute=task.crontab_minute or '*',
-                        hour=task.crontab_hour or '*',
-                        day_of_week=task.crontab_day_of_week or '*',
-                        day_of_month=task.crontab_day_of_month or '*',
-                        month_of_year=task.crontab_month_of_year or '*'
+                        minute=task.task_crontab_minute or '*',
+                        hour=task.task_crontab_hour or '*',
+                        day_of_week=task.task_crontab_day_of_week or '*',
+                        day_of_month=task.task_crontab_day_of_month or '*',
+                        month_of_year=task.task_crontab_month_of_year or '*'
                     )
                 
                 # 添加到调度中
-                self._schedule[task.name] = {
-                    'task': task.task,
+                self._schedule[task.task_name] = {
+                    'task': task.task_path,
                     'schedule': schedule_obj,
                     'args': args,
                     'kwargs': kwargs,

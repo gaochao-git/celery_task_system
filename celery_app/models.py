@@ -16,61 +16,65 @@ Base = declarative_base()
 
 class Task(Base):
     """任务模型"""
-    __tablename__ = 'tasks'
+    __tablename__ = 'celery_task_records'
     
     id = Column(Integer, primary_key=True)
     task_id = Column(String(255), unique=True, nullable=False, index=True)
-    name = Column(String(255), nullable=False)
-    status = Column(String(50), default='PENDING')
-    created_at = Column(DateTime, default=datetime.now)
-    started_at = Column(DateTime, nullable=True)
-    completed_at = Column(DateTime, nullable=True)
-    result = Column(Text, nullable=True)
-    traceback = Column(Text, nullable=True)
-    retries = Column(Integer, default=0)
-    args = Column(Text, nullable=True)
-    kwargs = Column(Text, nullable=True)
+    task_name = Column(String(255), nullable=False)
+    task_status = Column(String(50), default='PENDING')
+    create_time = Column(DateTime, default=datetime.now)
+    update_time = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    task_start_time = Column(DateTime, nullable=True)
+    task_complete_time = Column(DateTime, nullable=True)
+    task_result = Column(Text, nullable=True)
+    task_traceback = Column(Text, nullable=True)
+    task_retry_count = Column(Integer, default=0)
+    task_args = Column(Text, nullable=True)
+    task_kwargs = Column(Text, nullable=True)
     
     def __repr__(self):
-        return f"<Task {self.task_id} ({self.status})>"
+        return f"<Task {self.task_id} ({self.task_status})>"
 
 class PeriodicTaskRun(Base):
     """定时任务执行记录"""
-    __tablename__ = 'periodic_task_runs'
+    __tablename__ = 'celery_periodic_task_execution_logs'
     
     id = Column(Integer, primary_key=True)
     task_name = Column(String(255), nullable=False)
-    scheduled_time = Column(DateTime, nullable=False)
-    execution_time = Column(DateTime, default=datetime.now)
-    status = Column(String(50), default='SUCCESS')
-    result = Column(Text, nullable=True)
+    task_schedule_time = Column(DateTime, nullable=False)
+    task_execute_time = Column(DateTime, default=datetime.now)
+    create_time = Column(DateTime, default=datetime.now)
+    update_time = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    task_status = Column(String(50), default='SUCCESS')
+    task_result = Column(Text, nullable=True)
     
     def __repr__(self):
-        return f"<PeriodicTaskRun {self.task_name} at {self.execution_time}>"
+        return f"<PeriodicTaskRun {self.task_name} at {self.task_execute_time}>"
 
 class PeriodicTask(Base):
     """定时任务配置模型"""
-    __tablename__ = 'periodic_tasks'
+    __tablename__ = 'celery_periodic_task_configs'
     
     id = Column(Integer, primary_key=True)
-    name = Column(String(255), unique=True, nullable=False)
-    task = Column(String(255), nullable=False)  # 任务路径
-    interval = Column(Integer, nullable=True)  # 间隔秒数
-    crontab_minute = Column(String(64), nullable=True)
-    crontab_hour = Column(String(64), nullable=True)
-    crontab_day_of_week = Column(String(64), nullable=True)
-    crontab_day_of_month = Column(String(64), nullable=True)
-    crontab_month_of_year = Column(String(64), nullable=True)
-    args = Column(Text, nullable=True)  # JSON 格式的参数
-    kwargs = Column(Text, nullable=True)  # JSON 格式的关键字参数
-    enabled = Column(Boolean, default=True)
-    last_run_at = Column(DateTime, nullable=True)
-    total_run_count = Column(Integer, default=0)
-    date_changed = Column(DateTime, default=datetime.now, onupdate=datetime.now)
-    description = Column(Text, nullable=True)
+    task_name = Column(String(255), unique=True, nullable=False)
+    task_path = Column(String(255), nullable=False)  # 任务路径
+    task_interval = Column(Integer, nullable=True)  # 间隔秒数
+    task_crontab_minute = Column(String(64), nullable=True)
+    task_crontab_hour = Column(String(64), nullable=True)
+    task_crontab_day_of_week = Column(String(64), nullable=True)
+    task_crontab_day_of_month = Column(String(64), nullable=True)
+    task_crontab_month_of_year = Column(String(64), nullable=True)
+    task_args = Column(Text, nullable=True)  # JSON 格式的参数
+    task_kwargs = Column(Text, nullable=True)  # JSON 格式的关键字参数
+    task_enabled = Column(Boolean, default=True)
+    task_last_run_time = Column(DateTime, nullable=True)
+    task_run_count = Column(Integer, default=0)
+    create_time = Column(DateTime, default=datetime.now)
+    update_time = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    task_description = Column(Text, nullable=True)
     
     def __repr__(self):
-        return f"<PeriodicTask {self.name}>"
+        return f"<PeriodicTask {self.task_name}>"
 
 # 创建数据库表
 def init_db():

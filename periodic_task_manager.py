@@ -18,18 +18,18 @@ def list_tasks(args):
         
         for task in tasks:
             crontab_expr = ""
-            if task.crontab_minute is not None:
-                crontab_expr = f"{task.crontab_minute} {task.crontab_hour} {task.crontab_day_of_month} {task.crontab_month_of_year} {task.crontab_day_of_week}"
+            if task.task_crontab_minute is not None:
+                crontab_expr = f"{task.task_crontab_minute} {task.task_crontab_hour} {task.task_crontab_day_of_month} {task.task_crontab_month_of_year} {task.task_crontab_day_of_week}"
             
             rows.append([
                 task.id,
-                task.name,
-                task.task,
-                task.interval,
+                task.task_name,
+                task.task_path,
+                task.task_interval,
                 crontab_expr if crontab_expr else "-",
-                "是" if task.enabled else "否",
-                task.last_run_at.strftime("%Y-%m-%d %H:%M:%S") if task.last_run_at else "-",
-                task.total_run_count
+                "是" if task.task_enabled else "否",
+                task.task_last_run_time.strftime("%Y-%m-%d %H:%M:%S") if task.task_last_run_time else "-",
+                task.task_run_count
             ])
         
         print(tabulate(rows, headers=headers, tablefmt="grid"))

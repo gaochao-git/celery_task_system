@@ -26,19 +26,19 @@ def task_prerun_handler(task_id=None, task=None, args=None, kwargs=None, **kw):
         
         if existing_task:
             # 更新现有任务
-            existing_task.status = 'STARTED'
-            existing_task.started_at = datetime.now()
-            existing_task.retries += 1
+            existing_task.task_status = 'STARTED'
+            existing_task.task_start_time = datetime.now()
+            existing_task.task_retry_count += 1
         else:
             # 创建新任务记录
             new_task = Task(
                 task_id=task_id,
-                name=task.name,
-                status='STARTED',
-                created_at=datetime.now(),
-                started_at=datetime.now(),
-                args=json.dumps(args) if args else None,
-                kwargs=json.dumps(kwargs) if kwargs else None
+                task_name=task.name,
+                task_status='STARTED',
+                create_time=datetime.now(),
+                task_start_time=datetime.now(),
+                task_args=json.dumps(args) if args else None,
+                task_kwargs=json.dumps(kwargs) if kwargs else None
             )
             session.add(new_task)
         
@@ -59,9 +59,9 @@ def task_postrun_handler(task_id=None, task=None, state=None, retval=None, **kw)
     try:
         task_record = session.query(Task).filter_by(task_id=task_id).first()
         if task_record:
-            task_record.status = state
-            task_record.completed_at = datetime.now()
-            task_record.result = json.dumps(retval) if retval is not None else None
+            task_record.task_status = state
+            task_record.task_complete_time = datetime.now()
+            task_record.task_result = json.dumps(retval) if retval is not None else None
             session.commit()
     except Exception as e:
         logger.error(f"任务后处理错误: {str(e)}")
@@ -76,9 +76,9 @@ def task_failure_handler(task_id=None, exception=None, traceback=None, **kw):
     try:
         task_record = session.query(Task).filter_by(task_id=task_id).first()
         if task_record:
-            task_record.status = 'FAILURE'
-            task_record.completed_at = datetime.now()
-            task_record.traceback = str(traceback)
+            task_record.task_status = 'FAILURE'
+            task_record.task_complete_time = datetime.now()
+            task_record.task_traceback = str(traceback)
             session.commit()
     except Exception as e:
         logger.error(f"任务失败处理错误: {str(e)}")
@@ -131,10 +131,10 @@ def periodic_task():
     try:
         task_run = PeriodicTaskRun(
             task_name='periodic_task',
-            scheduled_time=execution_time,
-            execution_time=execution_time,
-            status='SUCCESS',
-            result=json.dumps(result)
+            task_schedule_time=execution_time,
+            task_execute_time=execution_time,
+            task_status='SUCCESS',
+            task_result=json.dumps(result)
         )
         session.add(task_run)
         session.commit()
@@ -170,10 +170,10 @@ def daily_report():
     try:
         task_run = PeriodicTaskRun(
             task_name='daily_report',
-            scheduled_time=execution_time.replace(hour=8, minute=0, second=0, microsecond=0),
-            execution_time=execution_time,
-            status='SUCCESS',
-            result=json.dumps(report_data)
+            task_schedule_time=execution_time.replace(hour=8, minute=0, second=0, microsecond=0),
+            task_execute_time=execution_time,
+            task_status='SUCCESS',
+            task_result=json.dumps(report_data)
         )
         session.add(task_run)
         session.commit()
@@ -203,4 +203,16 @@ def save_result(result):
     """
     logger.info(f"保存结果: {result}")
     # 模拟保存到数据库
-    return {'saved': True, 'value': result} 
+    return {'saved': True, 'value': result}
+
+@app.task
+def update_task_status(task_id, status):
+    session = get_session()
+    try:
+        task = session.query(Task).filter_by(task_id=task_id).first()
+        if task:
+            task.task_status = status
+            # update_time 会自动更新
+            session.commit()
+    finally:
+        session.close() 
