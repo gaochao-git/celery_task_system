@@ -48,6 +48,30 @@ class PeriodicTaskRun(Base):
     def __repr__(self):
         return f"<PeriodicTaskRun {self.task_name} at {self.execution_time}>"
 
+class PeriodicTask(Base):
+    """定时任务配置模型"""
+    __tablename__ = 'periodic_tasks'
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(String(255), unique=True, nullable=False)
+    task = Column(String(255), nullable=False)  # 任务路径
+    interval = Column(Integer, nullable=True)  # 间隔秒数
+    crontab_minute = Column(String(64), nullable=True)
+    crontab_hour = Column(String(64), nullable=True)
+    crontab_day_of_week = Column(String(64), nullable=True)
+    crontab_day_of_month = Column(String(64), nullable=True)
+    crontab_month_of_year = Column(String(64), nullable=True)
+    args = Column(Text, nullable=True)  # JSON 格式的参数
+    kwargs = Column(Text, nullable=True)  # JSON 格式的关键字参数
+    enabled = Column(Boolean, default=True)
+    last_run_at = Column(DateTime, nullable=True)
+    total_run_count = Column(Integer, default=0)
+    date_changed = Column(DateTime, default=datetime.now, onupdate=datetime.now)
+    description = Column(Text, nullable=True)
+    
+    def __repr__(self):
+        return f"<PeriodicTask {self.name}>"
+
 # 创建数据库表
 def init_db():
     Base.metadata.create_all(engine)

@@ -17,17 +17,8 @@ enable_utc = True
 # 添加新的配置项，解决启动时连接重试的警告
 broker_connection_retry_on_startup = True
 
-# 定时任务设置
-beat_schedule = {
-    'task-every-30-seconds': {
-        'task': 'celery_app.tasks.periodic_task',
-        'schedule': 30.0,  # 每30秒执行一次
-    },
-    'daily-report-task': {
-        'task': 'celery_app.tasks.daily_report',
-        'schedule': {'hour': 8, 'minute': 0},  # 每天早上8点执行
-    },
-}
+# 添加自定义调度器配置
+beat_scheduler = 'celery_app.scheduler.DatabaseScheduler'
 
 # MySQL 配置
 DATABASE_CONFIG = {
